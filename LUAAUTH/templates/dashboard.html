@@ -1,1 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KetamineHub | Admin Dashboard</title>
+    <!-- Modern Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0e0a16;
+            --bg-secondary: #161023;
+            --bg-tertiary: #201834;
+            --accent: #9b59ff;
+            --accent-hover: #b482ff;
+            --text-primary: #e6dcfa;
+            --text-secondary: #7864a0;
+            --danger: #b43c78;
+            --warning: #b4823c;
+            --success: #3cb478;
+            --border: rgba(155, 89, 255, 0.2);
+            --glass-bg: rgba(22, 16, 35, 0.7);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(155, 89, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(155, 89, 255, 0.05) 0%, transparent 50%);
+        }
+
+        /* Top Navigation */
+        nav {
+            background-color: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links button:hover {
+            color: var(--text-primary);
+        }
+
+        /* Login Container */
+        .login-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            display: none;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Generic Inputs and Buttons */
+        input[type="password"], input[type="text"], select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        input[type="password"]:focus, input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(155, 89, 255, 0.2);
+        }
+        
+        .search-bar {
+            width: 300px;
+            margin-bottom: 0 !important;
+        }
+
+        button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button.danger { background-color: var(--danger); }
+        button.danger:hover { background-color: #d2488d; }
+        button.warning { background-color: var(--warning); }
+        button.warning:hover { background-color: #d29b48; }
+        button.secondary {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+        }
+        button.secondary:hover { background-color: #2a2044; }
+        button.small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+        /* Dashboard Header Actions */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Key Table */
+        .table-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: rgba(155, 89, 255, 0.03); }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge.active { color: var(--success); background: rgba(60, 180, 120, 0.1); }
+        .badge.paused { color: var(--warning); background: rgba(180, 130, 60, 0.1); }
+        .badge.expired { color: var(--danger); background: rgba(180, 60, 120, 0.1); }
+        .badge.hwid { color: var(--accent); background: rgba(155, 89, 255, 0.1); font-family: monospace; }
+        
+        .note-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .modal h3 {
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+        .modal-form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease forwards, fadeOut 0.3s ease 3s forwards;
+            min-width: 250px;
+        }
+
+        .toast.error { border-color: var(--danger); }
+        .toast.success { border-color: var(--success); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; visibility: hidden; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+            KetamineHub Auth
+        </div>
+        <div class="nav-links" id="navLinks" style="display: none;">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="password" id="adminPassword" placeholder="Enter admin password..." required>
+                <button type="submit" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div class="dashboard-container" id="dashboardScreen">
+        <div class="dashboard-header">
+            <h2>Key Management</h2>
+            <div class="header-actions">
+                <input type="text" id="searchInput" class="search-bar" placeholder="Search keys or notes..." onkeyup="filterTable()">
+                <button class="warning" onclick="openBulkModal()">Bulk Actions</button>
+                <button class="secondary" onclick="exportCSV()">Export CSV</button>
+                <button onclick="openGenerateModal()">+ Generate New Key</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalKeys">0</div>
+                <div class="stat-label">Total Keys</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeHWIDs">0</div>
+                <div class="stat-label">Active Users (HWID Bound)</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key Details</th>
+                        <th>Expiration</th>
+                        <th>Status</th>
+                        <th>HWID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="keysTableBody">
+                    <!-- Rows injected via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="generateModal">
+        <div class="modal">
+            <h3>Generate Key</h3>
+            <div class="modal-form-group checkbox-group">
+                <input type="checkbox" id="hwidLock" checked>
+                <label for="hwidLock" style="margin:0; font-size:1rem; color: var(--text-primary);">Enable HWID Lock</label>
+            </div>
+            <div class="modal-form-group">
+                <label>Key Prefix (Optional)</label>
+                <input type="text" id="keyPrefix" placeholder="e.g., VIP, TRIAL">
+            </div>
+            <div class="modal-form-group">
+                <label>Duration</label>
+                <select id="keyDuration">
+                    <option value="0">Lifetime</option>
+                    <option value="1">1 Day (24 Hours)</option>
+                    <option value="7">7 Days</option>
+                    <option value="30">30 Days</option>
+                </select>
+            </div>
+            <div class="modal-form-group">
+                <label>Note (Optional)</label>
+                <input type="text" id="keyNote" placeholder="e.g., Given to John">
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" onclick="closeGenerateModal()">Cancel</button>
+                <button onclick="submitGenerateKey()">Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div class="modal-overlay" id="bulkModal">
+        <div class="modal">
+            <h3>Bulk Actions</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">Pause or unpause multiple keys at once by entering their prefix (e.g., VIP, TRIAL).</p>
+            <div class="modal-form-group">
+                <label>Target Prefix</label>
+                <input type="text" id="bulkPrefix" placeholder="e.g., VIP">
+            </div>
+            <div class="modal-actions">
+                <button class="secondary" onclick="closeBulkModal()">Cancel</button>
+                <button class="warning" onclick="submitBulkAction('pause')">Pause All</button>
+                <button class="success" style="background-color: var(--success);" onclick="submitBulkAction('unpause')">Unpause All</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Utility: Show Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // Utility: API Request wrapper handling 401s
+        async function apiRequest(endpoint, options = {}) {
+            const password = localStorage.getItem('admin_pwd');
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': password || ''
+            };
+            
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                ...options,
+                headers: { ...headers, ...options.headers }
+            });
+
+            if (response.status === 401) {
+                logout();
+                throw new Error("Unauthorized");
+            }
+            
+            return response;
+        }
+
+        // Login Logic
+        async function handleLogin(e) {
+            e.preventDefault();
+            const pwd = document.getElementById('adminPassword').value;
+            
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/verify`, {
+                    headers: { 'Authorization': pwd }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    localStorage.setItem('admin_pwd', pwd);
+                    showDashboard();
+                } else {
+                    showToast("Invalid password", "error");
+                }
+            } catch (err) {
+                showToast("Connection error", "error");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_pwd');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('navLinks').style.display = 'none';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('navLinks').style.display = 'block';
+            loadData();
+        }
+
+        // Data Loading
+        async function loadData() {
+            try {
+                const res = await apiRequest('/api/admin/keys');
+                const data = await res.json();
+                if (data.success) {
+                    renderTable(data.keys);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderTable(keysDict) {
+            const tbody = document.getElementById('keysTableBody');
+            tbody.innerHTML = '';
+            
+            let total = 0;
+            let active = 0;
+
+            const entries = Object.entries(keysDict);
+            total = entries.length;
+
+            entries.forEach(([keyStr, info]) => {
+                const tr = document.createElement('tr');
+                tr.className = 'key-row';
+                
+                // HWID display logic
+                let hwidDisplay = '<span class="badge" style="background:var(--bg-tertiary); color:var(--text-secondary)">Not Locked</span>';
+                if (info.hwid_locked !== false) { // True by default
+                    if (info.hwid) {
+                        active++;
+                        hwidDisplay = `<span class="badge hwid" title="${info.hwid}">${info.hwid.substring(0, 12)}...</span>`;
+                    } else {
+                        hwidDisplay = '<span class="badge" style="background:var(--bg-tertiary); color:var(--text-secondary)">Unused (Locked)</span>';
+                    }
+                }
+
+                // Status Logic
+                let statusClass = "active";
+                let statusText = "Active";
+                if(info.status === "paused") { statusClass = "paused"; statusText = "Paused"; }
+                if(info.status === "expired") { statusClass = "expired"; statusText = "Expired"; }
+
+                // Expiration display
+                let expDisplay = info.expires_at || 'Lifetime';
+
+                tr.innerHTML = `
+                    <td>
+                        <div style="font-family: monospace; color: var(--text-primary); font-size:1.1rem;">${keyStr}</div>
+                        ${info.note ? `<div class="note-text search-note">Note: ${info.note}</div>` : '<div class="search-note" style="display:none"></div>'}
+                    </td>
+                    <td style="font-size: 0.9rem;">${expDisplay}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>${hwidDisplay}</td>
+                    <td class="actions">
+                        <button class="small secondary" onclick="copyToClipboard('${keyStr}')">Copy</button>
+                        ${info.status === "paused" 
+                            ? `<button class="small secondary" onclick="toggleStatus('${keyStr}')">Unpause</button>` 
+                            : `<button class="small warning" onclick="toggleStatus('${keyStr}')">Pause</button>`}
+                        <button class="small secondary" onclick="resetHWID('${keyStr}')" ${(!info.hwid || info.hwid_locked === false) ? 'disabled' : ''}>Reset HWID</button>
+                        <button class="small danger" onclick="deleteKey('${keyStr}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('totalKeys').innerText = total;
+            document.getElementById('activeHWIDs').innerText = active;
+            filterTable(); // Apply active search filter if any
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll(".key-row");
+            rows.forEach(row => {
+                const keyStr = row.querySelector("td div").innerText.toLowerCase();
+                const noteStr = row.querySelector(".search-note").innerText.toLowerCase();
+                if (keyStr.includes(input) || noteStr.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // Modal Logic
+        function openGenerateModal() {
+            document.getElementById('hwidLock').checked = true;
+            document.getElementById('keyPrefix').value = "";
+            document.getElementById('keyDuration').value = "0";
+            document.getElementById('keyNote').value = "";
+            document.getElementById('generateModal').style.display = 'flex';
+        }
+        function closeGenerateModal() {
+            document.getElementById('generateModal').style.display = 'none';
+        }
+
+        async function submitGenerateKey() {
+            const hwid_locked = document.getElementById('hwidLock').checked;
+            const prefix = document.getElementById('keyPrefix').value;
+            const duration_days = document.getElementById('keyDuration').value;
+            const note = document.getElementById('keyNote').value;
+
+            try {
+                const res = await apiRequest('/generate', { 
+                    method: 'POST',
+                    body: JSON.stringify({ hwid_locked, prefix, duration_days, note })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showToast("Key generated successfully!");
+                    closeGenerateModal();
+                    loadData();
+                }
+            } catch (e) {}
+        }
+
+        // Bulk Modal Logic
+        function openBulkModal() {
+            document.getElementById('bulkPrefix').value = "";
+            document.getElementById('bulkModal').style.display = 'flex';
+        }
+        function closeBulkModal() {
+            document.getElementById('bulkModal').style.display = 'none';
+        }
+
+        async function submitBulkAction(action) {
+            const prefix = document.getElementById('bulkPrefix').value;
+            if(!prefix) {
+                showToast("Please enter a prefix!", "error");
+                return;
+            }
+
+            if(!confirm(`Are you sure you want to ${action} all keys containing "${prefix}"?`)) return;
+
+            try {
+                const res = await apiRequest('/api/admin/bulk_toggle', { 
+                    method: 'POST',
+                    body: JSON.stringify({ prefix, action })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    showToast(data.message);
+                    closeBulkModal();
+                    loadData();
+                } else {
+                    showToast(data.message, "error");
+                }
+            } catch (e) {}
+        }
+
+        // Action Logic
+        async function toggleStatus(keyStr) {
+            try {
+                const res = await apiRequest('/api/admin/toggle_status', {
+                    method: 'POST', body: JSON.stringify({ key: keyStr })
+                });
+                const data = await res.json();
+                if(data.success) { showToast(data.message); loadData(); }
+            } catch(e) {}
+        }
+
+        async function resetHWID(keyStr) {
+            if(!confirm("Are you sure you want to reset the HWID for this key?")) return;
+            try {
+                const res = await apiRequest('/api/admin/reset_hwid', {
+                    method: 'POST', body: JSON.stringify({ key: keyStr })
+                });
+                const data = await res.json();
+                if(data.success) { showToast("HWID reset successfully!"); loadData(); }
+            } catch(e) {}
+        }
+
+        async function deleteKey(keyStr) {
+            if(!confirm("Are you sure you want to permanently delete this key?")) return;
+            try {
+                const res = await apiRequest('/api/admin/delete_key', {
+                    method: 'POST', body: JSON.stringify({ key: keyStr })
+                });
+                const data = await res.json();
+                if(data.success) { showToast("Key deleted!"); loadData(); }
+            } catch(e) {}
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Key copied to clipboard!");
+            });
+        }
+
+        function exportCSV() {
+            const pwd = localStorage.getItem('admin_pwd');
+            window.location.href = `${API_BASE}/api/admin/export?auth=${pwd}`;
+        }
+
+        // Init Check
+        window.onload = () => {
+            const pwd = localStorage.getItem('admin_pwd');
+            if(pwd) {
+                // Try auto-login
+                fetch(`${API_BASE}/api/admin/verify`, { headers: { 'Authorization': pwd } })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) showDashboard();
+                    else logout();
+                }).catch(() => logout());
+            }
+        };
+    </script>
+</body>
+</html>
