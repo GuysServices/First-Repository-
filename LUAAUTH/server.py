@@ -5,9 +5,9 @@ import csv
 import io
 import datetime
 from flask import Flask, request, jsonify, render_template, Response
+from pymongo import MongoClient
 
 app = Flask(__name__)
-DB_FILE = 'database.json'
 
 # Admin Configuration
 ADMIN_PASSWORD = "admin" # Change this!
@@ -18,13 +18,63 @@ AUTH_CONFIG = {
     "app_id": "ketamine_v1_987654321"
 }
 
+# MongoDB Configuration
+MONGO_URI = os.environ.get("MONGO_URI")
+
+if MONGO_URI:
+    print("Connecting to MongoDB Atlas...")
+    try:
+        client = MongoClient(MONGO_URI)
+        db_client = client.get_default_database()  # gets database name from URL (e.g. auth_db)
+        collection = db_client["auth_data"]
+    except Exception as e:
+        print(f"Error connecting to MongoDB: {e}. Falling back to local database.json")
+        client = None
+        collection = None
+else:
+    print("Warning: MONGO_URI environment variable not found. Falling back to local database.json")
+    client = None
+    collection = None
+
+DB_FILE = 'database.json'
+
 def load_db():
+    if collection is not None:
+        try:
+            doc = collection.find_one({"_id": "auth_database"})
+            if not doc:
+                # Create initial structure in MongoDB
+                initial_db = {"_id": "auth_database", "keys": {
+                    "KETAMINE-VIP-PERM": {
+                        "hwid": None,
+                        "hwid_locked": True,
+                        "created_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "expires_at": None,
+                        "note": "Initial VIP Key",
+                        "status": "active"
+                    }
+                }}
+                collection.insert_one(initial_db)
+                return initial_db
+            return doc
+        except Exception as e:
+            print(f"Database error on load: {e}")
+            # Fall back to local file
+    
+    # Fallback local logic
     if not os.path.exists(DB_FILE):
         return {"keys": {}}
     with open(DB_FILE, 'r') as f:
         return json.load(f)
 
 def save_db(data):
+    if collection is not None:
+        try:
+            collection.replace_one({"_id": "auth_database"}, data, upsert=True)
+            return
+        except Exception as e:
+            print(f"Database error on save: {e}")
+            
     with open(DB_FILE, 'w') as f:
         json.dump(data, f, indent=4)
 
@@ -286,8 +336,8 @@ def serve_loader():
     return "warn('Loader not found on server! Contact admin.')", 404
 
 if __name__ == '__main__':
-    # Initialize DB if missing
-    if not os.path.exists(DB_FILE):
+    # Initialize DB if missing (local fallback only)
+    if collection is None and not os.path.exists(DB_FILE):
         save_db({"keys": {
             "KETAMINE-VIP-PERM": {
                 "hwid": None,
@@ -299,4 +349,4 @@ if __name__ == '__main__':
             }
         }})
     print(f"Starting Auth Server for {AUTH_CONFIG['app_name']} (App ID: {AUTH_CONFIG['app_id']})")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)
