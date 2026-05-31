@@ -18,12 +18,11 @@ local CONFIG = {
     LOADER_NAME = "Ketamine Hub",
     VERSION     = "v3.0",
     
-    VALID_KEYS = {
-        "KETAMINE-FREE-2026",
-        "KETAMINE-VIP-PERM",
-    },
+    -- Authentication settings
+    API_URL = "https://first-repository-flvb.onrender.com/verify",
+    APP_ID  = "ketamine_v1_987654321",
     
-    KEY_LINK = "https://discord.gg/GvAnaf2n8H",
+    KEY_LINK = "https://work.ink/2BB6/ketamine-scripts",
     
     -- GitHub raw base URL for scripts
     GITHUB_BASE = "https://raw.githubusercontent.com/GuysServices/Ketamine-Scripts/refs/heads/main/scripts/",
@@ -47,40 +46,48 @@ local CONFIG = {
 local GAMES = {
     -- FPS Games
     [301549746]  = {name = "Counter Blox",      file = "CounterBlox.lua"},
-    [3837841034] = {name = "Deadline",          file = "Deadline.lua"},
-    [9872472334] = {name = "Recoil",            file = "Recoil.lua"},
+    [12144402492] = {name = "Deadline",          file = "Deadline.lua"},
+    [72258920367796] = {name = "Recoil",            file = "Recoil.lua"},
     [3527629287] = {name = "BIG Paintball",     file = "BigPaintball.lua"},
     [286090429]  = {name = "Arsenal",           file = "Arsenal.lua"},
     [17625359962] = {name = "Rivals",           file = "Rivals.lua"},
-    [16033173781] = {name = "Bodycam",          file = "Bodycam.lua"},
-    [6744432785] = {name = "Flag Wars",         file = "FlagWars.lua"},
-    [5765898237] = {name = "Havok",             file = "Havok.lua"},
-    [8685599809] = {name = "Flick",             file = "Flick.lua"},
-    [4996038837] = {name = "Strafe",            file = "Strafe.lua"},
-    [10449761463] = {name = "HyperShot",        file = "HyperShot.lua"},
-    [6927421930] = {name = "Weaponry",          file = "Weaponry.lua"},
-    [16867644930] = {name = "One Scope",        file = "OneScope.lua"},
-    [13885983665] = {name = "OneTap",           file = "OneTap.lua"},
-    [16195927733] = {name = "FPS Duels",        file = "FPSDuels.lua"},
-    [7970808714] = {name = "Blox Strike",       file = "BloxStrike.lua"},
-    [18409385043] = {name = "Gun Grounds FFA",  file = "GunGroundsFFA.lua"},
-    [14329782734] = {name = "Combat Arena",     file = "CombatArena.lua"},
-    [16574769558] = {name = "Gunfight Arena",   file = "GunfightArena.lua"},
-    [13551458042] = {name = "Sniper Arena",     file = "SniperArena.lua"},
-    [14678907695] = {name = "Sniper Duels",     file = "SniperDuels.lua"},
-    [17306658498] = {name = "Pistol Arena",     file = "PistolArena.lua"},
-    [17410815584] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
-    [18238627636] = {name = "Airsoft Battles",  file = "AirsoftBattles.lua"},
-    [15553768128] = {name = "Reloaded Guns",    file = "ReloadedGuns.lua"},
-    [16086987655] = {name = "Realistic Hood",   file = "RealisticHood.lua"},
-    [14667389498] = {name = "Gun Evolution",    file = "GunEvolution.lua"},
+    [16404660684] = {name = "Bodycam",          file = "Bodycam.lua"},
+    [3214114884] = {name = "Flag Wars",         file = "FlagWars.lua"},
+    [88454318405193] = {name = "Havok",             file = "Havok.lua"},
+    [136801880565837] = {name = "Flick",             file = "Flick.lua"},
+    [107205390939183] = {name = "Strafe",            file = "Strafe.lua"},
+    [17516596118] = {name = "HyperShot",        file = "HyperShot.lua"},
+    [3297964905] = {name = "Weaponry",          file = "Weaponry.lua"},
+    [135648408848758] = {name = "One Scope",        file = "OneScope.lua"},
+    [90568084448279] = {name = "OneTap",           file = "OneTap.lua"},
+    [140636953470579] = {name = "FPS Duels",        file = "FPSDuels.lua"},
+    [114234929420007] = {name = "Blox Strike",       file = "BloxStrike.lua"},
+    [12137249458] = {name = "Gun Grounds FFA",  file = "GunGroundsFFA.lua"},
+    [15694891095] = {name = "Combat Arena",     file = "CombatArena.lua"},
+    [14518422161] = {name = "Gunfight Arena",   file = "GunfightArena.lua"},
+    [122446657157717] = {name = "Sniper Arena",     file = "SniperArena.lua"},
+    [109397169461300] = {name = "Sniper Duels",     file = "SniperDuels.lua"},
+    [87018676608089] = {name = "Pistol Arena",     file = "PistolArena.lua"},
+    [8664150532] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
+    [16261605398] = {name = "Airsoft Battles",  file = "AirsoftBattles.lua"},
+    [131964389958213] = {name = "Reloaded Guns",    file = "ReloadedGuns.lua"},
+    [12673840215] = {name = "Realistic Hood",   file = "RealisticHood.lua"},
+    [6172932937] = {name = "Energy Assault",    file = "EnergyAssault.lua"},
+    [3233893879] = {name = "Bad Business",      file = "BadBusiness.lua"},
+    
+
+    [99362936871032] = {name = "The Bronx Duels",    file = "TheBronxDuels.lua"},
     
     -- Other Games
-    [606849621]  = {name = "Jailbreak",         file = "Jailbreak.lua"},
-    [8737899170] = {name = "Pet Simulator 99",  file = "PetSimulator99.lua"},
+    [142823291]  = {name = "Murder Mystery 2",  file = "MurderMystery2.lua"},
+    [96574878340154] = {name = "Murder For Brainrots", file = "MurderForBrainrots.lua"},
+    [140582629911298] = {name = "Deathshot",         file = "Deathshot.lua"},
+    [129256170300917] = {name = "Bullet Storm",      file = "BulletStorm.lua"},
+    [3297964905] = {name = "Weaponry",          file = "Weaponry.lua"},
+    [107205390939183] = {name = "Strafe",            file = "Strafe.lua"},
     
     -- Universal fallback
-    [0]          = {name = "Universal",         file = "KetamineUniversal.lua"},
+    [0] = {name = "Universal",         file = "KetamineUniversal.lua"},
 }
 
 ----------------------------------------------------------------------
@@ -107,20 +114,54 @@ local function tween(obj, props, duration, style, direction)
     return t
 end
 
-local function generateDailyKey()
-    local date = os.date("!%Y%m%d")
-    local raw = "KETAMINE-DAILY-" .. date
-    return raw
+-- HWID Fetcher using executor specific functions
+local function getHWID()
+    local hwid = "UNKNOWN_HWID"
+    pcall(function()
+        if gethwid then hwid = gethwid()
+        elseif syn and syn.request then hwid = "SYN_" .. tostring(game:GetService("RbxAnalyticsService"):GetClientId())
+        else hwid = game:GetService("RbxAnalyticsService"):GetClientId() end
+    end)
+    return hwid
 end
 
-local function validateKey(input)
-    -- Check against static keys
-    for _, key in ipairs(CONFIG.VALID_KEYS) do
-        if input == key then return true end
+local function validateKey(input, callback)
+    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
+    if not requestFunc then
+        warn("Your executor does not support HTTP requests.")
+        callback(false, "Executor not supported for Auth.")
+        return
     end
-    -- Check daily auto-generated key
-    if input == generateDailyKey() then return true end
-    return false
+
+    local hwid = getHWID()
+    
+    local success, response = pcall(function()
+        return requestFunc({
+            Url = CONFIG.API_URL,
+            Method = "POST",
+            Headers = {["Content-Type"] = "application/json"},
+            Body = HttpService:JSONEncode({
+                app_id = CONFIG.APP_ID,
+                key = input,
+                hwid = hwid
+            })
+        })
+    end)
+
+    if success and response then
+        local decodeSuccess, data = pcall(function() return HttpService:JSONDecode(response.Body) end)
+        if decodeSuccess and data then
+            if data.success then
+                callback(true, data.message)
+            else
+                callback(false, data.message or "Invalid Key")
+            end
+        else
+            callback(false, "Failed to parse API response.")
+        end
+    else
+        callback(false, "Failed to connect to Auth API. Is server running?")
+    end
 end
 
 ----------------------------------------------------------------------
@@ -502,22 +543,27 @@ SubmitBtn.MouseButton1Click:Connect(function()
         return
     end
 
-    if validateKey(key) then
-        showStatus("Key verified!", CONFIG.SUCCESS)
-        SubmitBtn.Text = "Verified!"
-        SubmitBtn.BackgroundColor3 = CONFIG.SUCCESS
-        task.wait(1)
-        startLoading()
-    else
-        showStatus("Invalid key. Try again or get a new key.", CONFIG.ERROR)
-        -- Shake animation on input
-        local origPos = InputFrame.Position
-        for i = 1, 4 do
-            tween(InputFrame, {Position = origPos + UDim2.new(0, 6 * (i % 2 == 0 and 1 or -1), 0, 0)}, 0.05)
-            task.wait(0.05)
+    SubmitBtn.Text = "Verifying..."
+    
+    validateKey(key, function(isValid, msg)
+        if isValid then
+            showStatus(msg or "Key verified!", CONFIG.SUCCESS)
+            SubmitBtn.Text = "Verified!"
+            SubmitBtn.BackgroundColor3 = CONFIG.SUCCESS
+            task.wait(1)
+            startLoading()
+        else
+            showStatus(msg or "Invalid key. Try again or get a new key.", CONFIG.ERROR)
+            SubmitBtn.Text = "Verify Key"
+            -- Shake animation on input
+            local origPos = InputFrame.Position
+            for i = 1, 4 do
+                tween(InputFrame, {Position = origPos + UDim2.new(0, 6 * (i % 2 == 0 and 1 or -1), 0, 0)}, 0.05)
+                task.wait(0.05)
+            end
+            tween(InputFrame, {Position = origPos}, 0.05)
         end
-        tween(InputFrame, {Position = origPos}, 0.05)
-    end
+    end)
 end)
 
 GetKeyBtn.MouseButton1Click:Connect(function()
@@ -588,4 +634,3 @@ pcall(function()
 end)
 
 print("[Ketamine Hub] " .. CONFIG.VERSION .. " | Game: " .. detectedName .. " (PlaceId: " .. tostring(currentPlaceId) .. ")")
-print("[Ketamine Hub] Today's daily key: " .. generateDailyKey())
