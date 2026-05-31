@@ -68,12 +68,12 @@ local GAMES = {
     [122446657157717] = {name = "Sniper Arena",     file = "SniperArena.lua"},
     [109397169461300] = {name = "Sniper Duels",     file = "SniperDuels.lua"},
     [87018676608089] = {name = "Pistol Arena",     file = "PistolArena.lua"},
-    [8664150532] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
+    [70611375906033] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
     [16261605398] = {name = "Airsoft Battles",  file = "AirsoftBattles.lua"},
     [131964389958213] = {name = "Reloaded Guns",    file = "ReloadedGuns.lua"},
     [12673840215] = {name = "Realistic Hood",   file = "RealisticHood.lua"},
     [6172932937] = {name = "Energy Assault",    file = "EnergyAssault.lua"},
-    [3233893879] = {name = "Bad Business",      file = "BadBusiness.lua"},
+    [0] = {name = "Bad Business",      file = "BadBusiness.lua"},
     
 
     [99362936871032] = {name = "The Bronx Duels",    file = "TheBronxDuels.lua"},
