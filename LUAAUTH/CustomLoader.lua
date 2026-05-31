@@ -22,7 +22,7 @@ local CONFIG = {
     API_URL = "https://first-repository-flvb.onrender.com/verify",
     APP_ID  = "ketamine_v1_987654321",
     
-    KEY_LINK = "https://work.ink/2BB6/ketamine-scripts",
+    KEY_LINK = "https://link-target.net/6118378/LEy4RkpFAoi2",
     
     -- GitHub raw base URL for scripts
     GITHUB_BASE = "https://raw.githubusercontent.com/GuysServices/Ketamine-Scripts/refs/heads/main/scripts/",
