@@ -275,7 +275,10 @@ def serve_loader():
     This endpoint serves the obfuscated CustomLoader.lua to your users.
     Change the path below if you move the file.
     """
-    loader_path = r"c:\Users\GuyzModz\Desktop\roblox scripts\CustomLoader_obfuscated.lua"
+    loader_path = os.path.join(os.path.dirname(__file__), "CustomLoader_obfuscated.lua")
+    if not os.path.exists(loader_path):
+        loader_path = os.path.join(os.path.dirname(__file__), "CustomLoader.lua")
+        
     if os.path.exists(loader_path):
         with open(loader_path, "r", encoding="utf-8") as f:
             code = f.read()
