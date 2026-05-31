@@ -1,0 +1,19 @@
+{
+    "keys": {
+        "KETAMINE-VIP-PERM": {
+            "hwid": null,
+            "status": "active"
+        },
+        "KETAMINE-TRIAL-KEY": {
+            "hwid": null
+        },
+        "Ketamine-VIP-accae311-1970-4e9d-b4a1-7534dec95e05": {
+            "hwid": null,
+            "hwid_locked": true,
+            "created_at": "2026-05-31 02:09:21",
+            "expires_at": null,
+            "note": "",
+            "status": "active"
+        }
+    }
+}
