@@ -360,9 +360,9 @@ local function makeButton(text, posY, color, parent)
     return btn
 end
 
-local SubmitBtn  = makeButton("Verify Key", 170, CONFIG.ACCENT, Card)              -- Uses ACCENT
-local GetKeyBtn  = makeButton("Get Key", 220, Color3.fromRGB(45, 32, 72), Card)    -- Dark purple
-local DiscordBtn = makeButton("Copy Discord Invite", 268, Color3.fromRGB(90, 60, 160), Card)  -- Medium purple
+local SubmitBtn  = makeButton("Verify Key", 170, CONFIG.ACCENT, Card)
+local GetKeyBtn  = makeButton("Get Key", 220, Color3.fromRGB(45, 32, 72), Card)
+local DiscordBtn = makeButton("Copy Discord Invite", 268, Color3.fromRGB(90, 60, 160), Card)
 
 ----------------------------------------------------------------------
 -- Loading Screen (hidden initially)
@@ -465,7 +465,6 @@ local function startLoading()
     -- Determine which script to load
     local scriptFile = detectedFile
     if not scriptFile then
-        -- Fallback to universal
         scriptFile = GAMES[0] and GAMES[0].file or "KetamineUniversal.lua"
     end
     local scriptURL = CONFIG.GITHUB_BASE .. scriptFile
@@ -536,7 +535,7 @@ end
 -- Button Connections
 ----------------------------------------------------------------------
 SubmitBtn.MouseButton1Click:Connect(function()
-    local key = KeyInput.Text:gsub("^%s+", ""):gsub("%s+$", "") -- trim whitespace
+    local key = KeyInput.Text:gsub("^%s+", ""):gsub("%s+$", "")
 
     if key == "" then
         showStatus("Please enter a key.", CONFIG.ERROR)
@@ -555,7 +554,6 @@ SubmitBtn.MouseButton1Click:Connect(function()
         else
             showStatus(msg or "Invalid key. Try again or get a new key.", CONFIG.ERROR)
             SubmitBtn.Text = "Verify Key"
-            -- Shake animation on input
             local origPos = InputFrame.Position
             for i = 1, 4 do
                 tween(InputFrame, {Position = origPos + UDim2.new(0, 6 * (i % 2 == 0 and 1 or -1), 0, 0)}, 0.05)
@@ -567,7 +565,6 @@ SubmitBtn.MouseButton1Click:Connect(function()
 end)
 
 GetKeyBtn.MouseButton1Click:Connect(function()
-    -- Open key link
     if setclipboard then
         setclipboard(CONFIG.KEY_LINK)
         showStatus("Key link copied to clipboard!", CONFIG.ACCENT)
@@ -616,6 +613,31 @@ Card.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         Card.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+----------------------------------------------------------------------
+-- Live Heartbeat Tracker (pings website every 60s)
+----------------------------------------------------------------------
+task.spawn(function()
+    local identifier = tostring(LocalPlayer.UserId)
+    local reqFunc = (syn and syn.request) or request or http_request or (http and http.request)
+    
+    if not reqFunc then return end
+    
+    while true do
+        pcall(function()
+            reqFunc({
+                Url = "https://ketamine-website.vercel.app/api/ping",
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = HttpService:JSONEncode({
+                    type = "script",
+                    identifier = identifier
+                })
+            })
+        end)
+        task.wait(60)
     end
 end)
 
