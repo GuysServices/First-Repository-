@@ -44,7 +44,7 @@ def load_db():
             doc = collection.find_one({"_id": "auth_database"})
             if not doc:
                 # Create initial structure in MongoDB
-                initial_db = {"_id": "auth_database", "keys": {
+                initial_data = {"keys": {
                     "KETAMINE-VIP-PERM": {
                         "hwid": None,
                         "hwid_locked": True,
@@ -54,8 +54,10 @@ def load_db():
                         "status": "active"
                     }
                 }}
-                collection.insert_one(initial_db)
-                return initial_db
+                collection.insert_one({"_id": "auth_database", **initial_data})
+                return initial_data
+            # Strip _id so it doesn't get passed back into replace_one later
+            doc.pop("_id", None)
             return doc
         except Exception as e:
             print(f"Database error on load: {e}")
@@ -70,7 +72,9 @@ def load_db():
 def save_db(data):
     if collection is not None:
         try:
-            collection.replace_one({"_id": "auth_database"}, data, upsert=True)
+            # Strip _id if present — MongoDB won't allow _id in the replacement doc
+            save_data = {k: v for k, v in data.items() if k != "_id"}
+            collection.replace_one({"_id": "auth_database"}, save_data, upsert=True)
             return
         except Exception as e:
             print(f"Database error on save: {e}")
