@@ -637,7 +637,7 @@ task.spawn(function()
                 })
             })
         end)
-        task.wait(60)
+        task.wait(10)
     end
 end)
 
