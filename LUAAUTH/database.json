@@ -14,6 +14,15 @@
             "expires_at": null,
             "note": "",
             "status": "active"
+        },
+        {
+        "KETAMINE-FREE-a2fb2264-7677-494a-85a3-365a873113a6": {
+            "hwid": null,
+            "hwid_locked": false,
+            "created_at": "2026-05-31 02:09:21",
+            "expires_at": null,
+            "note": "FREE KEY FOR ALL USERS",
+            "status": "active"
         }
     }
 }
