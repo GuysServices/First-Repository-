@@ -6,6 +6,11 @@ import io
 import datetime
 from flask import Flask, request, jsonify, render_template, Response
 from pymongo import MongoClient
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 app = Flask(__name__)
 
@@ -19,7 +24,7 @@ AUTH_CONFIG = {
 }
 
 # MongoDB Configuration
-MONGO_URI = os.environ.get("MONGO_URI")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://braydenkimmerlepc14_db_user:<db_password>@cluster0.8leqn9w.mongodb.net/?appName=Cluster0")
 
 if MONGO_URI:
     print("Connecting to MongoDB Atlas...")
