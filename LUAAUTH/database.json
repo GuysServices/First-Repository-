@@ -23,6 +23,15 @@
             "expires_at": null,
             "note": "FREE KEY FOR ALL USERS",
             "status": "active"
+        },
+        {
+        "KETAMINE-FREE-TEST": {
+            "hwid": null,
+            "hwid_locked": false,
+            "created_at": "2026-05-31 02:09:21",
+            "expires_at": null,
+            "note": "TEST",
+            "status": "active"
         }
     }
 }
