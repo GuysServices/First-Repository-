@@ -25,8 +25,15 @@ if MONGO_URI:
     print("Connecting to MongoDB Atlas...")
     try:
         client = MongoClient(MONGO_URI)
-        db_client = client.get_default_database()  # gets database name from URL (e.g. auth_db)
+        try:
+            db_client = client.get_default_database()  # gets database name from URL (e.g. auth_db)
+        except Exception:
+            db_client = client["auth_db"]  # fallback to 'auth_db' if none in URI
+        
+        # Ping the server to ensure connection is valid
+        client.admin.command('ping')
         collection = db_client["auth_data"]
+        print("Successfully connected to MongoDB.")
     except Exception as e:
         print(f"Error connecting to MongoDB: {e}. Falling back to local database.json")
         client = None
@@ -55,15 +62,21 @@ def load_db():
                     }
                 }}
                 collection.insert_one({"_id": "auth_database", **initial_data})
+                print(f"[DB] Created initial MongoDB document with 1 key")
                 return initial_data
             # Strip _id so it doesn't get passed back into replace_one later
             doc.pop("_id", None)
+            key_count = len(doc.get("keys", {}))
+            print(f"[DB] Loaded {key_count} keys from MongoDB")
             return doc
         except Exception as e:
-            print(f"Database error on load: {e}")
-            # Fall back to local file
+            # CRITICAL: Do NOT fall back to local file when MongoDB is configured.
+            # Falling back would load stale data, and the next save_db() call would
+            # overwrite MongoDB with that stale data, deleting all new keys.
+            print(f"[DB] CRITICAL - MongoDB read failed: {e}")
+            raise RuntimeError(f"MongoDB read failed: {e}") from e
     
-    # Fallback local logic
+    # Local-only mode (no MongoDB configured)
     if not os.path.exists(DB_FILE):
         return {"keys": {}}
     with open(DB_FILE, 'r') as f:
@@ -74,11 +87,15 @@ def save_db(data):
         try:
             # Strip _id if present — MongoDB won't allow _id in the replacement doc
             save_data = {k: v for k, v in data.items() if k != "_id"}
+            key_count = len(save_data.get("keys", {}))
             collection.replace_one({"_id": "auth_database"}, save_data, upsert=True)
+            print(f"[DB] Saved {key_count} keys to MongoDB")
             return
         except Exception as e:
-            print(f"Database error on save: {e}")
+            print(f"[DB] CRITICAL - MongoDB write failed: {e}")
+            raise RuntimeError(f"MongoDB write failed: {e}") from e
             
+    # Local-only mode (no MongoDB configured)
     with open(DB_FILE, 'w') as f:
         json.dump(data, f, indent=4)
 
