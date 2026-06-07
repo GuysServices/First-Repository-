@@ -22,7 +22,7 @@ local CONFIG = {
     -- Raw GitHub URL to your keys JSON file
     -- Format: {"keys": ["KEY-ONE", "KEY-TWO", ...]}
     -- Raw GitHub URL to your database.json file on GitHub
-    DB_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/database.json",
+    DB_URL = "https://raw.githubusercontent.com/GuysServices/First-Repository-/refs/heads/main/LUAAUTH/database.json",
     
     KEY_LINK = "https://work.ink/2BB6/ketamine-scripts",
     
