@@ -19,10 +19,12 @@ local CONFIG = {
     VERSION     = "v3.0",
     
     -- Authentication settings
-    API_URL = "https://first-repository-flvb.onrender.com/verify",
-    APP_ID  = "ketamine_v1_987654321",
+    -- Raw GitHub URL to your keys JSON file
+    -- Format: {"keys": ["KEY-ONE", "KEY-TWO", ...]}
+    -- Raw GitHub URL to your database.json file on GitHub
+    DB_URL = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/database.json",
     
-    KEY_LINK = "https://link-target.net/6118378/LEy4RkpFAoi2",
+    KEY_LINK = "https://work.ink/2BB6/ketamine-scripts",
     
     -- GitHub raw base URL for scripts
     GITHUB_BASE = "https://raw.githubusercontent.com/GuysServices/Ketamine-Scripts/refs/heads/main/scripts/",
@@ -68,12 +70,12 @@ local GAMES = {
     [122446657157717] = {name = "Sniper Arena",     file = "SniperArena.lua"},
     [109397169461300] = {name = "Sniper Duels",     file = "SniperDuels.lua"},
     [87018676608089] = {name = "Pistol Arena",     file = "PistolArena.lua"},
-    [70611375906033] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
+    [8664150532] = {name = "FFA Headshot",     file = "FFAHeadshot.lua"},
     [16261605398] = {name = "Airsoft Battles",  file = "AirsoftBattles.lua"},
     [131964389958213] = {name = "Reloaded Guns",    file = "ReloadedGuns.lua"},
     [12673840215] = {name = "Realistic Hood",   file = "RealisticHood.lua"},
     [6172932937] = {name = "Energy Assault",    file = "EnergyAssault.lua"},
-    [0] = {name = "Bad Business",      file = "BadBusiness.lua"},
+    [3233893879] = {name = "Bad Business",      file = "BadBusiness.lua"},
     
 
     [99362936871032] = {name = "The Bronx Duels",    file = "TheBronxDuels.lua"},
@@ -126,41 +128,66 @@ local function getHWID()
 end
 
 local function validateKey(input, callback)
-    local requestFunc = (syn and syn.request) or (http and http.request) or http_request or request or (fluxus and fluxus.request)
-    if not requestFunc then
-        warn("Your executor does not support HTTP requests.")
-        callback(false, "Executor not supported for Auth.")
+    -- Fetch database.json from GitHub
+    local success, body = pcall(function()
+        return game:HttpGet(CONFIG.DB_URL, true)
+    end)
+
+    if not success or not body or body == "" then
+        callback(false, "Failed to fetch key database. Check your internet or DB_URL.")
         return
     end
 
-    local hwid = getHWID()
-    
-    local success, response = pcall(function()
-        return requestFunc({
-            Url = CONFIG.API_URL,
-            Method = "POST",
-            Headers = {["Content-Type"] = "application/json"},
-            Body = HttpService:JSONEncode({
-                app_id = CONFIG.APP_ID,
-                key = input,
-                hwid = hwid
-            })
-        })
+    local decodeSuccess, data = pcall(function()
+        return HttpService:JSONDecode(body)
     end)
 
-    if success and response then
-        local decodeSuccess, data = pcall(function() return HttpService:JSONDecode(response.Body) end)
-        if decodeSuccess and data then
-            if data.success then
-                callback(true, data.message)
-            else
-                callback(false, data.message or "Invalid Key")
-            end
+    if not decodeSuccess or not data or not data.keys then
+        callback(false, "Database format invalid.")
+        return
+    end
+
+    local inputTrimmed = input:gsub("^%s+", ""):gsub("%s+$", "")
+    local keyData = data.keys[inputTrimmed]
+
+    if not keyData then
+        callback(false, "Invalid key. Get a key or try again.")
+        return
+    end
+
+    -- Check status field if present
+    if keyData.status and keyData.status ~= "active" then
+        callback(false, "Key is inactive or revoked.")
+        return
+    end
+
+    -- Check expiry if present
+    if keyData.expires_at and keyData.expires_at ~= nil and keyData.expires_at ~= "" then
+        -- expires_at format: "YYYY-MM-DD HH:MM:SS" — compare as string (lexicographic works for this format)
+        local now = os.date("!%Y-%m-%d %H:%M:%S")
+        if now > keyData.expires_at then
+            callback(false, "Key has expired.")
+            return
+        end
+    end
+
+    -- HWID locking logic
+    if keyData.hwid_locked then
+        local hwid = getHWID()
+
+        if keyData.hwid == nil or keyData.hwid == "" or keyData.hwid == "null" then
+            -- First use: lock the key to this HWID by noting it locally
+            -- (GitHub JSON is read-only, so we just allow it and warn in console)
+            warn("[Ketamine Hub] HWID lock: key not yet bound. Allowing first use. Update database.json with HWID: " .. hwid)
+            callback(true, "Premium key verified! (HWID: " .. hwid .. ")")
+        elseif keyData.hwid == hwid then
+            callback(true, "Premium key verified!")
         else
-            callback(false, "Failed to parse API response.")
+            callback(false, "HWID mismatch. This key is locked to another device.")
         end
     else
-        callback(false, "Failed to connect to Auth API. Is server running?")
+        -- Non-HWID key, just let them in
+        callback(true, "Key verified!")
     end
 end
 
@@ -360,9 +387,9 @@ local function makeButton(text, posY, color, parent)
     return btn
 end
 
-local SubmitBtn  = makeButton("Verify Key", 170, CONFIG.ACCENT, Card)
-local GetKeyBtn  = makeButton("Get Key", 220, Color3.fromRGB(45, 32, 72), Card)
-local DiscordBtn = makeButton("Copy Discord Invite", 268, Color3.fromRGB(90, 60, 160), Card)
+local SubmitBtn  = makeButton("Verify Key", 170, CONFIG.ACCENT, Card)              -- Uses ACCENT
+local GetKeyBtn  = makeButton("Get Key", 220, Color3.fromRGB(45, 32, 72), Card)    -- Dark purple
+local DiscordBtn = makeButton("Copy Discord Invite", 268, Color3.fromRGB(90, 60, 160), Card)  -- Medium purple
 
 ----------------------------------------------------------------------
 -- Loading Screen (hidden initially)
@@ -465,6 +492,7 @@ local function startLoading()
     -- Determine which script to load
     local scriptFile = detectedFile
     if not scriptFile then
+        -- Fallback to universal
         scriptFile = GAMES[0] and GAMES[0].file or "KetamineUniversal.lua"
     end
     local scriptURL = CONFIG.GITHUB_BASE .. scriptFile
@@ -535,7 +563,7 @@ end
 -- Button Connections
 ----------------------------------------------------------------------
 SubmitBtn.MouseButton1Click:Connect(function()
-    local key = KeyInput.Text:gsub("^%s+", ""):gsub("%s+$", "")
+    local key = KeyInput.Text:gsub("^%s+", ""):gsub("%s+$", "") -- trim whitespace
 
     if key == "" then
         showStatus("Please enter a key.", CONFIG.ERROR)
@@ -554,6 +582,7 @@ SubmitBtn.MouseButton1Click:Connect(function()
         else
             showStatus(msg or "Invalid key. Try again or get a new key.", CONFIG.ERROR)
             SubmitBtn.Text = "Verify Key"
+            -- Shake animation on input
             local origPos = InputFrame.Position
             for i = 1, 4 do
                 tween(InputFrame, {Position = origPos + UDim2.new(0, 6 * (i % 2 == 0 and 1 or -1), 0, 0)}, 0.05)
@@ -565,6 +594,7 @@ SubmitBtn.MouseButton1Click:Connect(function()
 end)
 
 GetKeyBtn.MouseButton1Click:Connect(function()
+    -- Open key link
     if setclipboard then
         setclipboard(CONFIG.KEY_LINK)
         showStatus("Key link copied to clipboard!", CONFIG.ACCENT)
@@ -613,31 +643,6 @@ Card.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
         Card.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
-----------------------------------------------------------------------
--- Live Heartbeat Tracker (pings website every 60s)
-----------------------------------------------------------------------
-task.spawn(function()
-    local identifier = tostring(LocalPlayer.UserId)
-    local reqFunc = (syn and syn.request) or request or http_request or (http and http.request)
-    
-    if not reqFunc then return end
-    
-    while true do
-        pcall(function()
-            reqFunc({
-                Url = "https://ketamine-website.vercel.app/api/ping",
-                Method = "POST",
-                Headers = {["Content-Type"] = "application/json"},
-                Body = HttpService:JSONEncode({
-                    type = "script",
-                    identifier = identifier
-                })
-            })
-        end)
-        task.wait(10)
     end
 end)
 
